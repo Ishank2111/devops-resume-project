@@ -1,4 +1,4 @@
-# DevOps Deployment & Portfolio Platform
+./mvnw spring-boot:run# DevOps Deployment & Portfolio Platform
 
 A production-style DevOps portfolio platform demonstrating
 containerization, CI/CD, Infrastructure as Code, Kubernetes,
