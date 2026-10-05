@@ -2,10 +2,12 @@ pipeline {
     agent any 
 
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
                checkout scm
+               sh  'echo "Hello from Jenkins"'
             }
         }
+
     }
 }
