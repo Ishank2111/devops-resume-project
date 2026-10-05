@@ -11,5 +11,20 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                dir('devopsportfolio') { 
+                sh './mvnw package'
+                }
+            }
+        }
+
+         stage('Test') {
+            steps {
+                dir('devopsportfolio') { 
+                sh './mvnw clean package'
+                }
+            }
+        }
     }
 }
