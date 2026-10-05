@@ -39,5 +39,17 @@ pipeline {
                 sh 'docker build -f frontend/Dockerfile -t frontend frontend'
             }
         }
+
+         stage('Deploy') {
+            steps {
+                 sh 'docker compose -f docker-compose.yml up -d'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+        sh 'docker compose -f docker-compose.yml ps'
+            }
+        }
     }
 }
