@@ -26,5 +26,18 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Docker Build Backend') {
+            steps {
+                sh 'docker build -f docker/Dockerfile -t devops-portfolio:1.0 .'
+            }
+        }
+
+         stage('Docker Build Frontend') {
+            steps {
+                sh 'docker build -f frontend/Dockerfile -t frontend frontend'
+            }
+        }
     }
 }
