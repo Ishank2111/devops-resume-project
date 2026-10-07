@@ -41,6 +41,12 @@ pipeline {
                 sh 'docker build -f frontend/Dockerfile -t frontend frontend'
             }
         }
+        stage('Trivy Scan') {
+            steps {
+                sh 'trivy image --severity HIGH,CRITICAL --exit-code 1 devops-portfolio:1.0'
+            }
+        }
+        
 
         stage('Docker Login') {
             steps {
@@ -78,6 +84,12 @@ pipeline {
             sh 'docker push $DOCKER_USERNAME/frontend:latest'
                }
             }
+        }
+
+         stage('Helm Upgrade') {
+           steps {
+            sh 'helm upgrade --install devops-portfolio helm/devops-portfolio'
+           }
         }
     }
 }
