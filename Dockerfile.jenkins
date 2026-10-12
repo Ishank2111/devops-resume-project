@@ -1,9 +1,10 @@
+
 FROM jenkins/jenkins:lts
 
 USER root
 
 RUN apt-get update && \
-    apt-get install -y docker.io curl wget gnupg && \
+    apt-get install -y docker.io curl wget gnupg tar && \
     curl -SL https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-linux-x86_64 \
     -o /usr/local/bin/docker-compose && \
     chmod +x /usr/local/bin/docker-compose && \
@@ -11,5 +12,13 @@ RUN apt-get update && \
     echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" > /etc/apt/sources.list.d/trivy.list && \
     apt-get update && \
     apt-get install -y trivy
+
+ARG TARGETARCH
+
+RUN curl -fsSL "https://get.helm.sh/helm-v4.2.3-linux-${TARGETARCH}.tar.gz" -o /tmp/helm.tar.gz && \
+    tar -xzf /tmp/helm.tar.gz -C /tmp && \
+    install "/tmp/linux-${TARGETARCH}/helm" /usr/local/bin/helm && \
+    rm -rf /tmp/helm.tar.gz "/tmp/linux-${TARGETARCH}" && \
+    helm version
 
 USER root

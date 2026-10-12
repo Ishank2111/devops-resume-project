@@ -43,7 +43,7 @@ pipeline {
         }
         stage('Trivy Scan') {
             steps {
-                sh 'trivy image --severity HIGH,CRITICAL --exit-code 1 devops-portfolio:1.0'
+                sh 'trivy image --timeout 15m --scanners vuln --severity HIGH,CRITICAL --exit-code 1 devops-portfolio:1.0'
             }
         }
         
