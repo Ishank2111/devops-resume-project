@@ -1,56 +1,53 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
-  name: backend
-
+  name: {{ include "devops-portfolio.fullname" . }}
+  labels:
+    {{- include "devops-portfolio.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-
   selector:
     matchLabels:
-      app: backend
-
+      {{- include "devops-portfolio.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: backend
-
+        {{- include "devops-portfolio.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
+      serviceAccountName: {{ include "devops-portfolio.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       containers:
-        - name: backend
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-
+        - name: devops-portfolio
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
-
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.httpGet.path }}
-              port: {{ .Values.service.targetPort }}
+              port: http
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
               path: {{ .Values.readinessProbe.httpGet.path }}
-              port: {{ .Values.service.targetPort }}
+              port: http
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           resources:
-            requests:
-              memory: {{ .Values.resources.requests.memory }}
-              cpu: {{ .Values.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.resources.limits.memory }}
-              cpu: {{ .Values.resources.limits.cpu }}
-
-          volumeMounts:
-            {{- toYaml .Values.volumeMounts | nindent 12 }}
-
+            {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
             {{- toYaml .Values.envFrom | nindent 12 }}
-
+          volumeMounts:
+            {{- toYaml .Values.volumeMounts | nindent 12 }}
       volumes:
         {{- toYaml .Values.volumes | nindent 8 }}

@@ -88,7 +88,14 @@ pipeline {
 
          stage('Helm Upgrade') {
            steps {
-            sh 'helm upgrade --install devops-portfolio helm/devops-portfolio'
+               withEnv(['KUBECONFIG=/var/jenkins_home/.kube/config']) {
+            sh '''
+                helm upgrade --install devops-portfolio helm/devops-portfolio \
+                  --namespace default \
+                  --wait \
+                  --timeout 3m
+            '''
+               }
            }
         }
     }

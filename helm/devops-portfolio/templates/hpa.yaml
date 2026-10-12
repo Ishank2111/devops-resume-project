@@ -1,19 +1,17 @@
 {{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
-
 metadata:
-  name: backend-hpa
-
+  name: {{ include "devops-portfolio.fullname" . }}
+  labels:
+    {{- include "devops-portfolio.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: backend
-
+    name: {{ include "devops-portfolio.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
-
   metrics:
     - type: Resource
       resource:
